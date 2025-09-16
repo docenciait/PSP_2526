@@ -67,14 +67,13 @@
 
 # Contenidos
 
-Tema 1. Introducción a la programación Concurrente
-Tema 2. Programación de procesos Java
-Tema 3. Programación multihilo en Java
-Tema 4. Programación en red en Java
-Tema 5. Servicios en red
-Tema 6. Técnicas de programación segura
+- Tema 1. Introducción a la programación Concurrente
+- Tema 2. Programación de procesos Java
+- Tema 3. Programación multihilo en Java
+- Tema 4. Programación en red en Java
+- Tema 5. Servicios en red
+- Tema 6. Técnicas de programación segura
 
-¡Vale, ahora sí lo hacemos bien y **no dejamos fuera ningún tema**! Vamos a asignar **cada tema a un RA** de manera lógica, un solo instrumento por RA, y sumando **100%**.
 
 ---
 
