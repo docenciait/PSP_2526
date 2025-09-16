@@ -67,12 +67,12 @@
 
 # Contenidos
 
-- Tema 1. Introducción a la programación Concurrente
-- Tema 2. Programación de procesos Java
-- Tema 3. Programación multihilo en Java
-- Tema 4. Programación en red en Java
-- Tema 5. Servicios en red
-- Tema 6. Técnicas de programación segura
+* Tema 1. Introducción a la programación Concurrente
+* Tema 2. Programación de procesos Java
+* Tema 3. Programación multihilo en Java
+* Tema 4. Programación en red en Java
+* Tema 5. Servicios en red
+* Tema 6. Técnicas de programación segura
 
 
 ---
