@@ -67,4 +67,37 @@
 
 # Contenidos
 
-Tema 1: RA1
+Tema 1. Introducción a la programación Concurrente
+Tema 2. Programación de procesos Java
+Tema 3. Programación multihilo en Java
+Tema 4. Programación en red en Java
+Tema 5. Servicios en red
+Tema 6. Técnicas de programación segura
+
+¡Vale, ahora sí lo hacemos bien y **no dejamos fuera ningún tema**! Vamos a asignar **cada tema a un RA** de manera lógica, un solo instrumento por RA, y sumando **100%**.
+
+---
+
+### Distribución propuesta:
+
+| RA                                                                    | Tema asociado                                                                              | Instrumento    | % sobre la nota final |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | -------------- | --------------------- |
+| RA1: Desarrolla aplicaciones compuestas por varios procesos           | Tema 1. Introducción a la programación concurrente + Tema 2. Programación de procesos Java | IEA (teórico)  | 20%                   |
+| RA2: Desarrolla aplicaciones compuestas por varios hilos de ejecución | Tema 3. Programación multihilo en Java                                                     | IEB (práctico) | 20%                   |
+| RA3: Programa mecanismos de comunicación en red                       | Tema 4. Programación en red en Java                                                        | IEA (teórico)  | 20%                   |
+| RA4: Desarrolla aplicaciones que ofrecen servicios en red             | Tema 5. Servicios en red                                                                   | IEB (práctico) | 20%                   |
+| RA5: Protege las aplicaciones y los datos                             | Tema 6. Técnicas de programación segura                                                    | IEA (teórico)  | 20%                   |
+
+---
+
+### Lógica de la asignación:
+
+1. **RA1**: engloba **Tema 1 y 2**, porque ambos tratan de procesos y concurrencia.
+2. **RA2**: se centra en hilos, que es el núcleo del **Tema 3**.
+3. **RA3**: abarca la programación de **comunicación en red** (**Tema 4**).
+4. **RA4**: se ocupa de servicios en red (**Tema 5**) y es eminentemente práctico → IEB.
+5. **RA5**: cubre **seguridad**, teoría y conceptos de **Tema 6** → IEA.
+
+
+
+---
