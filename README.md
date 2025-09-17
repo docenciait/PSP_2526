@@ -92,11 +92,11 @@ Aquí te dejo la propuesta ajustada:
 
 | Trimestre | RA  | Tema asociado                                                                              | Instrumento(s)                 | % sobre la nota final |
 | --------- | --- | ------------------------------------------------------------------------------------------ | ------------------------------ | --------------------- |
-| **1º**    | RA1 | Tema 1. Introducción a la programación concurrente + Tema 2. Programación de procesos Java | IEA (teórico)                  | 15%                   |
-|           | RA2 | Tema 3. Programación multihilo en Java                                                     | IEB (práctico en PC)           | 20%                   |
-|           | RA3 | Tema 4. Programación en red en Java                                                        | IEA (teórico) + IEB (práctico) | 25%                   |
-| **2º**    | RA4 | Tema 5. Servicios en red                                                                   | IEC (proyecto)                 | 20%                   |
-|           | RA5 | Tema 6. Técnicas de programación segura                                                    | IEA (teórico) + IEC (proyecto) | 20%                   |
+| **1º**    | RA1 | Tema 1. Introducción a la programación concurrente + Tema 2. Programación de procesos Java | IEA (teórico)                  | 20%                   |
+|           | RA2 | Tema 3. Programación multihilo en Java                                                     | IEB (práctico)            | 20%                   |
+|           | RA3 | Tema 4. Programación en red en Java                                                        | IEB (práctico) | 20%                   |
+| **2º**    | RA4 | Tema 5. Servicios en red                                                                   | IEB                | 20%                   |
+|           | RA5 | Tema 6. Técnicas de programación segura                                                    | IEA  IEC (proyecto) | 20%                   |
 
 ---
 
