@@ -78,25 +78,41 @@
 ---
 
 ### Distribución propuesta:
+Vale 👍, entendido:
+Quieres que cada trimestre tenga **dos instrumentos de evaluación**:
 
-| RA                                                                    | Tema asociado                                                                              | Instrumento    | % sobre la nota final |
-| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | -------------- | --------------------- |
-| RA1: Desarrolla aplicaciones compuestas por varios procesos           | Tema 1. Introducción a la programación concurrente + Tema 2. Programación de procesos Java | IEA (teórico)  | 20%                   |
-| RA2: Desarrolla aplicaciones compuestas por varios hilos de ejecución | Tema 3. Programación multihilo en Java                                                     | IEB (práctico) | 20%                   |
-| RA3: Programa mecanismos de comunicación en red                       | Tema 4. Programación en red en Java                                                        | IEA (teórico)  | 20%                   |
-| RA4: Desarrolla aplicaciones que ofrecen servicios en red             | Tema 5. Servicios en red                                                                   | IEB (práctico) | 20%                   |
-| RA5: Protege las aplicaciones y los datos                             | Tema 6. Técnicas de programación segura                                                    | IEA (teórico)  | 20%                   |
+* **Primer trimestre** → IEA (examen teórico) + IEB (examen práctico en PC).
+* **Segundo trimestre** → IEA (examen teórico) + IEC (proyecto).
+
+Aquí te dejo la propuesta ajustada:
+
+---
+
+## Distribución RAs, IE y porcentajes
+
+| Trimestre | RA  | Tema asociado                                                                              | Instrumento(s)                 | % sobre la nota final |
+| --------- | --- | ------------------------------------------------------------------------------------------ | ------------------------------ | --------------------- |
+| **1º**    | RA1 | Tema 1. Introducción a la programación concurrente + Tema 2. Programación de procesos Java | IEA (teórico)                  | 15%                   |
+|           | RA2 | Tema 3. Programación multihilo en Java                                                     | IEB (práctico en PC)           | 20%                   |
+|           | RA3 | Tema 4. Programación en red en Java                                                        | IEA (teórico) + IEB (práctico) | 25%                   |
+| **2º**    | RA4 | Tema 5. Servicios en red                                                                   | IEC (proyecto)                 | 20%                   |
+|           | RA5 | Tema 6. Técnicas de programación segura                                                    | IEA (teórico) + IEC (proyecto) | 20%                   |
 
 ---
 
-### Lógica de la asignación:
+## Justificación
 
-1. **RA1**: engloba **Tema 1 y 2**, porque ambos tratan de procesos y concurrencia.
-2. **RA2**: se centra en hilos, que es el núcleo del **Tema 3**.
-3. **RA3**: abarca la programación de **comunicación en red** (**Tema 4**).
-4. **RA4**: se ocupa de servicios en red (**Tema 5**) y es eminentemente práctico → IEB.
-5. **RA5**: cubre **seguridad**, teoría y conceptos de **Tema 6** → IEA.
+* **Primer trimestre (RA1, RA2, RA3)**
 
+  * Se reparte entre **teoría (IEA)** y **práctica (IEB)**.
+  * RA3 se evalúa con **ambos instrumentos** porque combina teoría de sockets y práctica en laboratorio.
 
+* **Segundo trimestre (RA4, RA5)**
+
+  * Centrado en **servicios en red** y **seguridad**.
+  * La parte práctica se evalúa con un **proyecto (IEC)**, integrando RA4+RA5.
+  * La teoría de seguridad (RA5) mantiene **IEA** como instrumento.
 
 ---
+
+
