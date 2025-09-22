@@ -78,8 +78,7 @@
 ---
 
 ### Distribución propuesta:
-Vale 👍, entendido:
-Quieres que cada trimestre tenga **dos instrumentos de evaluación**:
+
 
 * **Primer trimestre** → IEA (examen teórico) + IEB (examen práctico en PC).
 * **Segundo trimestre** → IEA (examen teórico) + IEC (proyecto).
