@@ -6,7 +6,7 @@ Implementa un simulador de planificación con el algoritmo FCFS en un monoproces
 
   **Indicaciones técnicas**
 
-* Define una clase `Proceso` con: `id`, `tiempoLlegada`, `tiempoCPU`, `tiempoRestante`, `tiempoFinalizacion`.
+* Define una clase `Proceso` con: `id`, `tiempoLlegada`, `tiempoCPU`, `tiempoFinalizacion`.
 * Usa una **LinkedList** para representar la cola de listos (`readyQueue`), ya que el orden de llegada determina el orden de ejecución.
 * Recorre los procesos en orden, acumulando el tiempo total, y calcula:
 
