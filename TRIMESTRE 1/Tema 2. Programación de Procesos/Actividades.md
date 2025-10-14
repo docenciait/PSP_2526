@@ -18,3 +18,27 @@ Muestra el valor devuelto por el método directory():
 - Después de cambiar el valor de user.dir
 - Después de cambiar el directorio de trabajo al directorio temporal del sistema.
   En este momento tu programa todavía no mostrará ningún listado.
+
+## A3
+
+Crea un nuevo paquete: (configura como nombre del proyecto U2A3_ExitValue y como clase principal psp.activities.U2A3_ExitValue). Prepara un programa que ejecute varios comandos (notepad, calc, comandos shell) uno detrás de otro, de forma secuencial y haz que tu programa obtenga el código de finalización de cada uno de ellos. Para cada programa imprime el nombre y su código de finalización.
+
+Prueba a poner aplicaciones que no existan o comandos con parámetros incorrectos.
+
+¿Qué hace Netbeans si pones System.exit(10) para acabar tu programa?. Fíjate en la consola. ¿Qué hace Netbeans si pones System.exit(0) para acabar tu programa.? Cuál es entonces el valor por defecto?
+
+# A4
+
+Crea un nuevo proyecto Java (Ant > Java Application) (configura como nombre del proyecto U2A3_Lanzador y como clase principal psp.activities.U2A4_Lanzador).
+
+Ahora, en el mismo proyecto y dentro del mismo paquete crea otra clase, U2A4_Lanzado, con un método main que recibirá el nombre del programa que debe ejecutar como parámetro del método main(args). Haz que esta aplicación cree un nuevo proceso para ejecutar el programa recibido como parámetro.
+
+La clase terminará devolviendo como código de finalización el que el programa lanzado le haya devuelto a ella.
+
+Método System.exit()
+
+Cero. El código cero debe devolverse cuando la ejecución del proceso haya ido bien, esto es, que ha terminado su ejecución sin problemas. Distinto de cero. Un código distinto de cero indica una terminación con errores. Java nos permite usar códigos diferentes para los diferentes tipos de error.
+
+Por último, podemos hacer que U2A4_Lanzador pregunte al usuario qué aplicación quiere ejecutar y pasársela a la clase U2A4_Lanzado.
+
+En Lanzador recoge el código de finalización de Lanzado y muestra un mensaje indicando si el proceso terminó bien o con errores.
