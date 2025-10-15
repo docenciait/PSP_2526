@@ -29,7 +29,7 @@ Prueba a poner aplicaciones que no existan o comandos con parámetros incorrecto
 
 # A4
 
-Crea un nuevo proyecto Java (Ant > Java Application) (configura como nombre del proyecto U2A3_Lanzador y como clase principal psp.activities.U2A4_Lanzador).
+Crea un nuevo paquete Java (configura como nombre del proyecto U2A3_Lanzador y como clase principal psp.activities.U2A4_Lanzador).
 
 Ahora, en el mismo proyecto y dentro del mismo paquete crea otra clase, U2A4_Lanzado, con un método main que recibirá el nombre del programa que debe ejecutar como parámetro del método main(args). Haz que esta aplicación cree un nuevo proceso para ejecutar el programa recibido como parámetro.
 
