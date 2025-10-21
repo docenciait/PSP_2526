@@ -24,7 +24,4 @@ Los objetivos que alcanzaremos tras esta unidad son:
 
 - [2.1 Comunicación de Procesos](2.1_ComunicaciónProcesos.md)
 - [2.2 Process Builder](2.2_ProcessBuilder.md)
-- [2.3 Gestión de IO de Procesos](2.3_GestiónIOProceso.md)
-- [Anexo I](2.4_AnexoI.md)
-- [Anexo II](2.5_AnexoII.md)
 - [Actividades](Actividades.md)
