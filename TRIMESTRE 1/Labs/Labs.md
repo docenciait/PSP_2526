@@ -1,9 +1,5 @@
 # Ejercicios y Labs
 
-## Repositorios de laboratorios y ejercicios de clase
-
-- [Laboratorios](https://github.com/docenciait/Labs_PSP2526)
-
 ## Manual java
 
 - [Java](java.md)
