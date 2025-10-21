@@ -14,4 +14,3 @@
   - [Labs](TRIMESTRE%201/Labs/Labs.md)
 
 - [TRIMESTRE 2](TRIMESTRE%202/README.md)
-  - [UTX. Desarrollo](TRIMESTRE%202/UTX.%20Desarrollo/UTX.md)
