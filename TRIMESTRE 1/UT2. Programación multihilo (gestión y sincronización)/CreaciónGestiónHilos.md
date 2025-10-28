@@ -1,8 +1,3 @@
----
-sidebar_position: 3
-title: Creación y Gestión de Hilos
----
-
 # Creación y Gestión de Hilos
 
 En esta sección aprenderemos cómo crear, iniciar, gestionar y finalizar hilos en Kotlin. Exploraremos las diferentes formas de trabajar con hilos, desde el uso de la clase `Thread` tradicional hasta enfoques más modernos como las corrutinas de Kotlin.

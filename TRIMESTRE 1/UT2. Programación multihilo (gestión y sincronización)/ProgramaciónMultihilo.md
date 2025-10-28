@@ -1,4 +1,4 @@
-# Tema 3. Programación Multihilo
+# Tema 2. Programación Multihilo
 
 ### Programación concurrente, paralela y distribuida
 
