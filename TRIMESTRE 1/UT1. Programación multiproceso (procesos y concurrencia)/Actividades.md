@@ -27,7 +27,7 @@ Prueba a poner aplicaciones que no existan o comandos con parámetros incorrecto
 
 ¿Qué hace Netbeans si pones System.exit(10) para acabar tu programa?. Fíjate en la consola. ¿Qué hace Netbeans si pones System.exit(0) para acabar tu programa.? Cuál es entonces el valor por defecto?
 
-# A4
+## A4
 
 Crea un nuevo paquete Java (configura como nombre del proyecto U2A3_Lanzador y como clase principal psp.activities.U2A4_Lanzador).
 
@@ -42,3 +42,10 @@ Cero. El código cero debe devolverse cuando la ejecución del proceso haya ido 
 Por último, podemos hacer que U2A4_Lanzador pregunte al usuario qué aplicación quiere ejecutar y pasársela a la clase U2A4_Lanzado.
 
 En Lanzador recoge el código de finalización de Lanzado y muestra un mensaje indicando si el proceso terminó bien o con errores.
+
+---
+
+## Tests
+
+- [Test 1](Tests/Test_UT1_A.md)
+- [Test 2](Tests/Test_UT1_B.md)
