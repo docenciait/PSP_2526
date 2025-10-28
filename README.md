@@ -64,7 +64,3 @@
    - Extraordinaria de junio: segunda oportunidad para RAs pendientes. **Calificación Extraordinaria**
 
 ---
-
-# Programación
-
-- [Documento de Programación Didáctica](PD_PSP_ISIDRA_25-26.pdf)
