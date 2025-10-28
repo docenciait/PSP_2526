@@ -9,5 +9,3 @@
   - [UT2. Programación multihilo (gestión y sincronización)](<TRIMESTRE%201/UT2.%20Programación%20multihilo%20(gestión%20y%20sincronización)/UT2.md>)
 
   - [Labs](TRIMESTRE%201/Labs/Labs.md)
-
-- [TRIMESTRE 2](TRIMESTRE%202/README.md)
