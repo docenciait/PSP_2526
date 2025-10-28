@@ -1,5 +1,6 @@
 # Tabla de Contenidos
 
+- [Presentación del Curso](README.md)
 - [Programación Didáctica](Programaciones.md)
 - [TRIMESTRE 1](TRIMESTRE%201/README.md)
 
