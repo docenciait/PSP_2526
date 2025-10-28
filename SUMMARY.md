@@ -1,7 +1,7 @@
 # Tabla de Contenidos
 
 - [Presentación del Curso](README.md)
-- [Programación Didáctica](PD_PSP_ISIDRA_25-26.pdf)
+- [Programación Didáctica](Programaciones.md)
 - [TRIMESTRE 1](TRIMESTRE%201/README.md)
 
   - [UT1. Programación multiproceso (procesos y concurrencia)](<TRIMESTRE%201/UT1.%20Programación%20multiproceso%20(procesos%20y%20concurrencia)/UT1.md>)
