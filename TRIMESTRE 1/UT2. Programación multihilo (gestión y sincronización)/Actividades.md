@@ -61,3 +61,12 @@ public class TrianguloRunnable implements Runnable {
     }
 }
 ```
+
+- Ejercicio 2: Lanzar varios hilos con Thread
+  Crea un programa que lance 5 hilos usando la clase Thread y cada hilo imprima su nombre y un mensaje indicando que ha iniciado y que ha finalizado tras dormir 1 segundo.
+
+- Ejercicio 3: Usar la función thread() de Kotlin
+  Haz un programa que cree 3 hilos usando la función thread() de Kotlin. Cada hilo debe imprimir su nombre y realizar una cuenta regresiva desde 3 hasta 1, esperando medio segundo entre cada número.
+
+- Ejercicio 4: Extender la clase Thread
+  Implementa una clase que extienda Thread y sobrescriba el método run() para mostrar un mensaje personalizado. Crea e inicia dos instancias de esta clase y espera a que ambas terminen usando join().
