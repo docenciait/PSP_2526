@@ -1,4 +1,4 @@
-# Tema 3. Programación Multihilo
+# Tema 2. Programación Multihilo
 
-[3.1 Programación Multihilo](ProgramaciónMultihilo.md)
+[2.1 Programación Multihilo](ProgramaciónMultihilo.md)
 [Actividades](Actividades.md)
