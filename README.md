@@ -12,8 +12,6 @@
 
 5. Protege las aplicaciones y los datos definiendo y aplicando criterios de seguridad en el acceso, almacenamiento y transmisión de la información.
 
-
-
 ## 1. Proceso de Evaluación
 
 - **Sistema basado en Resultados de Aprendizaje (RA)**:
@@ -21,11 +19,13 @@
   Si un RA no alcanza el 5, el módulo se considera **no superado**.
 
 - **Instrumentos de evaluación**:
+
   - **IEA**: Examen teórico.
   - **IEB**: Examen práctico en PC.
   - **IEC**: Proyecto.
 
 - **Criterios de superación**:
+
   - **Primer trimestre**:
     - Si se superan todos los RAs → se muestra el promedio.
     - Si no se superan todos → nota informativa **4**.
@@ -44,74 +44,27 @@
 
 1. **Prohibición de IA y copias**
 
-   * Se **prohíbe el uso de herramientas de IA** (ChatGPT, Bard, etc.) en exámenes, prácticas y proyectos, salvo autorización explícita del profesor.
-   * Está **prohibido copiar exámenes, prácticas o proyectos** de otros alumnos o fuentes externas.
+   - Se **prohíbe el uso de herramientas de IA** (ChatGPT, Bard, etc.) en exámenes, prácticas y proyectos, salvo autorización explícita del profesor.
+   - Está **prohibido copiar exámenes, prácticas o proyectos** de otros alumnos o fuentes externas.
 
 2. **Sanciones**
 
-   * Cualquier incumplimiento → **calificación 0 en el instrumento de evaluación** correspondiente.
-   * Además → **calificación 0 en todos los RAs asociados** a ese instrumento.
+   - Cualquier incumplimiento → **calificación 0 en el instrumento de evaluación** correspondiente.
+   - Además → **calificación 0 en todos los RAs asociados** a ese instrumento.
 
 3. **Superación del módulo**
 
-   * Todos los RAs ≥5 → módulo superado.
-   * Uno o más RAs <5 → módulo no superado.
+   - Todos los RAs ≥5 → módulo superado.
+   - Uno o más RAs <5 → módulo no superado.
 
 4. **Visualización de notas en Raíces**
 
-   * Primer trimestre: RAs no superados → promedio limitado a máximo 4 o la nota menor si es inferior.
-   * Segundo trimestre: solo se presentan los RAs pendientes de aprobar. **Calificación Ordinaria**.
-   * Extraordinaria de junio: segunda oportunidad para RAs pendientes. **Calificación Extraordinaria**
----
-
-
-# Contenidos
-
-* Tema 1. Introducción a la programación Concurrente
-* Tema 2. Programación de procesos Java
-* Tema 3. Programación multihilo en Java
-* Tema 4. Programación en red en Java
-* Tema 5. Servicios en red
-* Tema 6. Técnicas de programación segura
-
+   - Primer trimestre: RAs no superados → promedio limitado a máximo 4 o la nota menor si es inferior.
+   - Segundo trimestre: solo se presentan los RAs pendientes de aprobar. **Calificación Ordinaria**.
+   - Extraordinaria de junio: segunda oportunidad para RAs pendientes. **Calificación Extraordinaria**
 
 ---
 
-### Distribución propuesta:
+# Programación
 
-
-* **Primer trimestre** → IEA (examen teórico) + IEB (examen práctico en PC).
-* **Segundo trimestre** → IEA (examen teórico) + IEC (proyecto).
-
-Aquí te dejo la propuesta ajustada:
-
----
-
-## Distribución RAs, IE y porcentajes
-
-| Trimestre | RA  | Tema asociado                                                                              | Instrumento(s)                 | % sobre la nota final |
-| --------- | --- | ------------------------------------------------------------------------------------------ | ------------------------------ | --------------------- |
-| **1º**    | RA1 | Tema 1. Introducción a la programación concurrente + Tema 2. Programación de procesos Java | IEA (teórico)                  | 20%                   |
-|           | RA2 | Tema 3. Programación multihilo en Java                                                     | IEB (práctico)            | 20%                   |
-|           | RA3 | Tema 4. Programación en red en Java                                                        | IEB (práctico) | 20%                   |
-| **2º**    | RA4 | Tema 5. Servicios en red                                                                   | IEB                | 20%                   |
-|           | RA5 | Tema 6. Técnicas de programación segura                                                    | IEA  IEC (proyecto) | 20%                   |
-
----
-
-## Justificación
-
-* **Primer trimestre (RA1, RA2, RA3)**
-
-  * Se reparte entre **teoría (IEA)** y **práctica (IEB)**.
-  * RA3 se evalúa con **ambos instrumentos** porque combina teoría de sockets y práctica en laboratorio.
-
-* **Segundo trimestre (RA4, RA5)**
-
-  * Centrado en **servicios en red** y **seguridad**.
-  * La parte práctica se evalúa con un **proyecto (IEC)**, integrando RA4+RA5.
-  * La teoría de seguridad (RA5) mantiene **IEA** como instrumento.
-
----
-
-
+- [Documento de Programación Didáctica](PD_PSP_ISIDRA_25-26.pdf)
