@@ -4,4 +4,5 @@
 - [2.2 Creación y Gestión de Hilos en Kotlin](2_CreaciónGestiónHilos.md)
 - [2.3 Corrutinas en Kotlin](3_CorrutinasKotlin.md)
 - [2.4 Corrutinas en Android](4_CorrutinasAndroid.md)
-- [Actividades](Actividades.md)
+- [Actividades 1](Actividades.md)
+- [Actividades 2](Actividades.md)
