@@ -72,4 +72,4 @@ public class TrianguloRunnable implements Runnable {
 
 - Ejercicio 5: Haz el mismo ejercicio 1 con Kotlin
 
-- [Soluciones]()
+- [Soluciones](Soluciones1.kt)
