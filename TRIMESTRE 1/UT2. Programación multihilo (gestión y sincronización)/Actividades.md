@@ -71,3 +71,5 @@ public class TrianguloRunnable implements Runnable {
 - Ejercicio 4: Crea un programa en Kotlin que lance dos hilos. El primer hilo debe mostrar su nombre, prioridad y estado antes y después de dormir 1 segundo. El segundo hilo debe mostrar si es daemon y si está vivo antes y después de dormir 500 ms. El hilo principal debe esperar a que ambos hilos terminen y mostrar un mensaje final.
 
 - Ejercicio 5: Haz el mismo ejercicio 1 con Kotlin
+
+- [Soluciones]()
