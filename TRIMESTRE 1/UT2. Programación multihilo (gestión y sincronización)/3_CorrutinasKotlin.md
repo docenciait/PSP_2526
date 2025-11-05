@@ -159,6 +159,13 @@ fun main() = runBlocking {
 }
 ```
 
+| Característica | `launch`                                 | `async`                                      |
+| -------------- | ---------------------------------------- | -------------------------------------------- |
+| Devuelve       | `Job` (no resultado)                     | `Deferred<T>` (resultado diferido)           |
+| Uso típico     | Ejecutar tareas concurrentes sin retorno | Ejecutar tareas concurrentes **con retorno** |
+| Espera         | `job.join()`                             | `deferred.await()`                           |
+| Comportamiento | No devuelve valor                        | Devuelve valor (como `Future` o `Promise`)   |
+
 ## Contextos y Dispatchers
 
 Los **dispatchers** determinan en qué hilo(s) se ejecutará la corrutina:
