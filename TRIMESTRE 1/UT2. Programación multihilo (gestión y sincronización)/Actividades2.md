@@ -327,5 +327,3 @@ fun main() = runBlocking {
 ```
 
 ---
-
-Si quieres, puedo generar los archivos `.kt` con soluciones completas en la carpeta `UT2` y ejecutar alguno para verificar la salida. ¿Los creo ahora?
