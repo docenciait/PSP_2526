@@ -238,6 +238,45 @@ fun main() = runBlocking {
     println("Esperando a las hijas...")
     // runBlocking espera automáticamente a todas las corrutinas hijas
 }
+
+// Ejemplo donde se cancela el padre y se cancelan las corrutinas hijas
+package app.corrutinas02
+
+import kotlinx.coroutines.*
+
+fun main() = runBlocking {
+    println(" Inicio del scope padre")
+
+    val jobPadre = launch {
+        println(" Corrutina padre iniciada")
+
+        launch {
+            println(" Hija 1 iniciada")
+            try {
+                delay(2000)
+                println(" Hija 1 completada")
+            } catch (e: CancellationException) {
+                println(" Hija 1 cancelada")
+            }
+        }
+
+        launch {
+            println(" Hija 2 iniciada")
+            try {
+                delay(3000)
+                println(" Hija 2 completada")
+            } catch (e: CancellationException) {
+                println(" Hija 2 cancelada")
+            }
+        }
+    }
+
+    delay(1000)
+    println(" Cancelando al padre")
+    jobPadre.cancelAndJoin()   //  Aquí se cancela todo el árbol de corrutinas
+    println(" Fin del scope padre")
+}
+
 ```
 
 ### CoroutineScope
@@ -270,6 +309,10 @@ fun main() = runBlocking {
     delay(1000)
 }
 ```
+
+- Aquí más información del API Courrutine Scope:
+
+- [API Courrutine](https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-coroutine-scope/)
 
 ## Cancelación de corrutinas
 
@@ -355,6 +398,8 @@ fun main() = runBlocking {
 
 ### CoroutineExceptionHandler
 
+- Esto es un manejador para capturar excepciones, es como un **try-catch global**.
+
 ```kotlin
 fun main() = runBlocking {
     val handler = CoroutineExceptionHandler { _, exception ->
@@ -377,34 +422,32 @@ Permite que las corrutinas hijas fallen sin afectar a sus hermanas:
 
 ```kotlin
 fun main() = runBlocking {
-    val supervisor = SupervisorJob()
-
-    with(CoroutineScope(coroutineContext + supervisor)) {
+    supervisorScope {
         val child1 = launch {
             delay(100)
             println("Hija 1 completada")
         }
 
         val child2 = launch {
-            delay(50)
-            throw RuntimeException("Hija 2 falla")
+            try {
+                delay(50)
+                throw RuntimeException("Hija 2 falla")
+            } catch (e: Exception) {
+                println("Excepción interna: ${e.message}")
+            }
         }
 
         val child3 = launch {
             delay(150)
-            println("Hija 3 completada") // Se ejecuta aunque child2 falle
-        }
-
-        try {
-            child2.join()
-        } catch (e: Exception) {
-            println("Excepción: ${e.message}")
+            println("Hija 3 completada")
         }
 
         child1.join()
+        child2.join()
         child3.join()
     }
 }
+
 ```
 
 ## Operaciones paralelas
@@ -581,7 +624,28 @@ fun main() = runBlocking {
         }
 }
 
-// Salida: 4, 16, 36
+/*
+
+Claro 👇
+
+1. **`(1..10).asFlow()`** → convierte el rango en un flujo (`Flow<Int>`).
+2. **`filter { it % 2 == 0 }`** → deja pasar solo los números pares → `2, 4, 6, 8, 10`.
+3. **`map { it * it }`** → transforma cada número al cuadrado → `4, 16, 36, 64, 100`.
+4. **`take(3)`** → toma solo los tres primeros → `4, 16, 36`.
+5. **`collect { println(it) }`** → consume e imprime los valores.
+
+🔹 **Resultado final:**
+
+```
+
+4
+16
+36
+
+```
+
+*/
+
 ```
 
 ### Flow builders
@@ -606,6 +670,12 @@ fun main() = runBlocking {
     }.collect { println(it) }
 }
 ```
+
+1. **`flowOf()`** → crea un flujo con valores fijos.
+2. **`asFlow()`** → convierte una colección o rango en flujo.
+3. **`flow {}`** → crea un flujo manualmente usando `emit()` y permite `suspend`.
+4. Todos son **flow builders**: funciones para **construir flujos (`Flow`)**.
+5. Usa `flow {}` cuando necesitas lógica o retardos (`delay`, llamadas a API, etc.).
 
 ## Ejemplo práctico completo: Sistema de descargas
 
@@ -713,6 +783,12 @@ fun main() = runBlocking {
 }
 ```
 
+1. **`StateFlow`** es un flujo que **guarda y emite el último valor del estado**.
+2. Se crea con **`MutableStateFlow(valorInicial)`**.
+3. Los cambios en **`_count.value`** se emiten automáticamente a los observadores.
+4. Los nuevos `collect` reciben **el valor actual al instante**.
+5. Ideal para **estados reactivos** (UI, contadores, configuraciones).
+
 ### SharedFlow: Broadcast
 
 ```kotlin
@@ -748,6 +824,12 @@ fun main() = runBlocking {
     delay(100)
 }
 ```
+
+1. **`SharedFlow`** permite **emitir eventos a varios observadores a la vez** (broadcast).
+2. Se crea con **`MutableSharedFlow()`**, y los observadores usan `.collect()`.
+3. Cada `emit()` envía el evento a **todas las corrutinas suscritas activas**.
+4. A diferencia de `StateFlow`, **no guarda el último valor**, solo reenvía eventos.
+5. Ideal para **notificaciones, mensajes o eventos del sistema**.
 
 ## Mejores prácticas con corrutinas
 
