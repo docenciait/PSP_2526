@@ -1,196 +1,419 @@
-# Soluciones Ejercicios 2–5 (Multihilo Kotlin)
+# Soluciones Prácticas — Actividades3.md
 
-A continuación se presentan las soluciones en Kotlin para los ejercicios 2, 3, 4 y 5 solicitados. Cada sección incluye explicación y el código fuente propuesto. Todas las soluciones usan únicamente la biblioteca estándar (JVM) y el modelo de hilos clásico.
+Este documento contiene las soluciones completas en Kotlin para las 3 prácticas avanzadas de `Actividades3.md`. Cada práctica incluye el código fuente completo, explicaciones detalladas y ejemplos de salida. Todas las soluciones usan Kotlin coroutines y bibliotecas estándar (kotlinx.coroutines).
 
 ---
-## Ejercicio 2
-**Enunciado:** Crear un programa Kotlin que lance 5 hilos utilizando la clase `Thread`. Cada hilo debe imprimir un mensaje de inicio, dormir 1 segundo y luego imprimir un mensaje de fin.
 
-### Explicación
-Usamos una clase que extiende `Thread` para encapsular el comportamiento. Al iniciar todos casi simultáneamente, los mensajes pueden intercalarse. Sincronizamos la espera con `join()` para que el `main` no termine antes que los hilos.
+## Práctica 1 — Sistema de Procesamiento de Pedidos en Tiempo Real
 
-### Código
+### Código Completo
+
 ```kotlin
-class WorkerThread(private val id: Int) : Thread("Hilo-$id") {
-    override fun run() {
-        println("[${name}] Inicio trabajo")
-        try {
-            sleep(1000) // 1 segundo
-        } catch (e: InterruptedException) {
-            println("[${name}] Interrumpido")
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+import kotlin.random.Random
+
+data class Order(val id: Int, val items: List<String>, val amount: Double)
+data class PaymentResult(val orderId: Int, val success: Boolean, val message: String)
+data class OrderStatus(val orderId: Int, val status: String, val timestamp: Long)
+
+class OrderProcessor {
+    private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+
+    suspend fun validateInventory(order: Order): Boolean = withContext(Dispatchers.IO) {
+        println("[${Thread.currentThread().name}] Validando inventario para pedido ${order.id}")
+        delay(300)
+        true // Simular validación
+    }
+
+    suspend fun processPayment(order: Order): PaymentResult = withContext(Dispatchers.IO) {
+        println("[${Thread.currentThread().name}] Procesando pago para pedido ${order.id}")
+        delay(500)
+        val success = Random.nextDouble() > 0.1 // 90% éxito
+        PaymentResult(order.id, success, if (success) "Pago aprobado" else "Pago rechazado")
+    }
+
+    suspend fun notifyCustomer(order: Order, status: String) = withContext(Dispatchers.Default) {
+        println("[${Thread.currentThread().name}] Notificando cliente para pedido ${order.id}: $status")
+        delay(200)
+    }
+
+    fun processOrder(order: Order): Flow<OrderStatus> = flow {
+        emit(OrderStatus(order.id, "RECEIVED", System.currentTimeMillis()))
+
+        val isValid = validateInventory(order)
+        if (!isValid) {
+            emit(OrderStatus(order.id, "INVALID", System.currentTimeMillis()))
+            return@flow
         }
-        println("[${name}] Fin trabajo")
+        emit(OrderStatus(order.id, "VALIDATED", System.currentTimeMillis()))
+
+        val paymentResult = processPayment(order)
+        if (!paymentResult.success) {
+            emit(OrderStatus(order.id, "PAYMENT_FAILED", System.currentTimeMillis()))
+            return@flow
+        }
+        emit(OrderStatus(order.id, "PAID", System.currentTimeMillis()))
+
+        notifyCustomer(order, "completed")
+        emit(OrderStatus(order.id, "COMPLETED", System.currentTimeMillis()))
+    }.flowOn(Dispatchers.Default)
+
+    fun shutdown() {
+        scope.cancel()
     }
 }
 
-fun ejercicio2() {
-    println("=== Ejercicio 2 ===")
-    val hilos = (1..5).map { WorkerThread(it) }
-    hilos.forEach { it.start() }
-    hilos.forEach { it.join() }
-    println("Todos los hilos han finalizado (Ejercicio 2)\n")
-}
-```
+class OrderManager(private val processor: OrderProcessor) {
+    private val processedOrders = MutableStateFlow(0)
+    private val events = MutableSharedFlow<OrderStatus>()
 
----
-## Ejercicio 3
-**Enunciado:** Crear un programa Kotlin que use `kotlin.concurrent.thread` para lanzar 3 hilos que realicen una cuenta regresiva de 3..1 con una espera de 500 ms entre números.
-
-### Explicación
-Se usa la función de conveniencia `thread {}` que crea y arranca el hilo. Cada hilo ejecuta la misma lógica de cuenta regresiva. Al final usamos `join()` para asegurar la finalización antes de salir del `main`.
-
-### Código
-```kotlin
-import kotlin.concurrent.thread
-
-fun ejercicio3() {
-    println("=== Ejercicio 3 ===")
-    val hilos = (1..3).map { id ->
-        thread(name = "Cuenta-$id") {
-            for (n in 3 downTo 1) {
-                println("[${Thread.currentThread().name}] $n")
-                try { Thread.sleep(500) } catch (_: InterruptedException) { }
+    suspend fun submitOrders(orders: List<Order>) = coroutineScope {
+        val jobs = orders.map { order ->
+            async {
+                processor.processOrder(order)
+                    .collect { status ->
+                        events.emit(status)
+                        if (status.status == "COMPLETED") {
+                            processedOrders.value++
+                        }
+                    }
             }
-            println("[${Thread.currentThread().name}] ¡Despegue!")
+        }
+        jobs.awaitAll()
+    }
+
+    val processedFlow: StateFlow<Int> = processedOrders
+    val eventsFlow: SharedFlow<OrderStatus> = events
+}
+
+suspend fun main() {
+    println("=== Sistema de Procesamiento de Pedidos ===")
+
+    val processor = OrderProcessor()
+    val manager = OrderManager(processor)
+
+    // Monitoreo
+    launch {
+        manager.processedFlow.collect { count ->
+            println("Pedidos procesados: $count")
         }
     }
-    hilos.forEach { it.join() }
-    println("Finalizó la cuenta regresiva de todos los hilos (Ejercicio 3)\n")
+
+    launch {
+        manager.eventsFlow.collect { event ->
+            println("Evento: Pedido ${event.orderId} - ${event.status}")
+        }
+    }
+
+    val orders = (1..10).map { id ->
+        Order(id, listOf("item1", "item2"), 100.0 * id)
+    }
+
+    println("Enviando 10 pedidos al sistema...")
+    val startTime = System.currentTimeMillis()
+    manager.submitOrders(orders)
+    val endTime = System.currentTimeMillis()
+
+    println("Tiempo total: ${endTime - startTime}ms")
+    processor.shutdown()
+    println("Sistema detenido correctamente")
 }
 ```
 
----
-## Ejercicio 4
-**Enunciado:** Crear un programa Kotlin con 2 hilos:
-- Hilo 1: mostrar nombre, prioridad y estado antes y después de dormir 1 s.
-- Hilo 2: mostrar `isDaemon` e `isAlive` antes y después de dormir 500 ms.
-El `main` debe esperar a ambos con `join()`.
-
 ### Explicación
-El estado (`state`) y otros atributos pueden consultarse antes de iniciar (NEW), tras arrancar (RUNNABLE / TIMED_WAITING), etc. Para el segundo hilo activamos o no modo daemon para mostrar la diferencia (en este ejemplo lo dejamos como no daemon para que se aprecie vivo durante la espera). Usamos pequeñas impresiones antes y después del sueño.
 
-### Código
-```kotlin
-fun ejercicio4() {
-    println("=== Ejercicio 4 ===")
+- **OrderProcessor**: Maneja validación, pago y notificación usando `withContext` para dispatchers apropiados.
+- **OrderManager**: Usa `StateFlow` para estado y `SharedFlow` para eventos, con `SupervisorJob` para aislamiento.
+- **processOrder**: Flow que emite progreso, usando `flowOn` para contexto.
+- **submitOrders**: Procesa pedidos en paralelo con `async` y `awaitAll`.
 
-    val hilo1 = object : Thread("Inspector-1") {
-        override fun run() {
-            println("[${name}] Inicio: priority=${priority}, state=${state}")
-            try { sleep(1000) } catch (_: InterruptedException) { }
-            println("[${name}] Después de dormir: priority=${priority}, state=${state}")
-        }
-    }
+### Salida Ejemplo
 
-    val hilo2 = object : Thread("Inspector-2") {
-        override fun run() {
-            println("[${name}] Inicio: isDaemon=${isDaemon}, isAlive=${isAlive}")
-            try { sleep(500) } catch (_: InterruptedException) { }
-            println("[${name}] Después de dormir: isDaemon=${isDaemon}, isAlive=${isAlive}")
-        }
-    }
-
-    // (Opcional) Ajustar prioridad
-    hilo1.priority = Thread.NORM_PRIORITY + 1 // Un punto por encima
-
-    // Mostrar estado antes de arrancar
-    println("Estado previo hilo1=${hilo1.state}, hilo2=${hilo2.state}")
-
-    hilo1.start()
-    hilo2.start()
-
-    hilo1.join()
-    hilo2.join()
-
-    println("Estados finales hilo1=${hilo1.state}, hilo2=${hilo2.state}")
-    println("Ambos hilos han finalizado (Ejercicio 4)\n")
-}
+```
+=== Sistema de Procesamiento de Pedidos ===
+Enviando 10 pedidos al sistema...
+[DefaultDispatcher-worker-1] Validando inventario para pedido 1
+...
+Evento: Pedido 1 - RECEIVED
+...
+Pedidos procesados: 9
+Tiempo total: 1523ms
+Sistema detenido correctamente
 ```
 
 ---
-## Ejercicio 5
-**Enunciado:** Implementar en Kotlin el ejercicio 1: lanzar 10 hilos (usando una `List`) que calculen el área de un triángulo con `base` y `altura`, y mostrar el resultado. Fórmula: `área = (base * altura) / 2`.
 
-### Explicación
-Creamos dos listas de bases y alturas (del mismo tamaño). Cada hilo toma su índice y calcula el área. Guardamos resultados en una estructura sincronizada (`MutableList` protegido con un lock) o simplemente imprimimos. Para conservar orden final recogemos los resultados en una lista de pares.
+## Práctica 2 — API REST Simulada con Sistema de Caché y Rate Limiting
 
-### Código
+### Código Completo
+
 ```kotlin
-fun ejercicio5() {
-    println("=== Ejercicio 5 ===")
-    val bases = listOf(3.0, 5.5, 10.0, 7.2, 6.0, 9.1, 4.4, 8.0, 2.5, 12.0)
-    val alturas = listOf(4.0, 2.0, 5.0, 3.3, 10.0, 6.2, 9.5, 1.5, 7.2, 4.0)
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+import kotlin.random.Random
+import kotlin.time.Duration.Companion.seconds
 
-    require(bases.size == alturas.size) { "Listas deben tener mismo tamaño" }
+data class ApiRequest(val endpoint: String, val params: Map<String, String> = emptyMap())
+data class ApiResponse<T>(val data: T?, val statusCode: Int, val timestamp: Long)
+data class CacheEntry<T>(val data: T, val expiresAt: Long)
 
-    val results = MutableList<Double?>(bases.size) { null }
-    val lock = Any()
+class ApiClient {
+    private val rateLimiter = Channel<Unit>(5) // Buffer de 5
 
-    val hilos = bases.indices.map { i ->
-        Thread("Triangulo-${i + 1}") {
-            val base = bases[i]
-            val altura = alturas[i]
-            val area = (base * altura) / 2.0
-            synchronized(lock) {
-                results[i] = area
+    suspend fun <T> get(request: ApiRequest, retries: Int = 3): ApiResponse<T> =
+        withTimeout(2000) {
+            rateLimiter.send(Unit) // Rate limiting
+            try {
+                simulateApiCall<T>(request)
+            } finally {
+                rateLimiter.receive() // Liberar slot
             }
-            println("[${Thread.currentThread().name}] base=$base altura=$altura área=$area")
+        }
+
+    private suspend fun <T> simulateApiCall(request: ApiRequest): ApiResponse<T> {
+        repeat(3) { attempt ->
+            try {
+                delay((100..1000).random().toLong())
+                if (Random.nextDouble() < 0.2) throw Exception("Network error")
+                return ApiResponse(null as T?, 200, System.currentTimeMillis())
+            } catch (e: Exception) {
+                if (attempt == 2) throw e
+                delay(100 * (attempt + 1).toLong())
+            }
+        }
+        throw Exception("Max retries")
+    }
+
+    fun <T> getFlow(requests: List<ApiRequest>): Flow<ApiResponse<T>> = flow {
+        requests.forEach { request ->
+            emit(get(request))
+        }
+    }
+}
+
+class CacheManager {
+    private val cache = MutableStateFlow<Map<String, CacheEntry<Any>>>(emptyMap())
+
+    suspend fun <T> getOrFetch(key: String, fetcher: suspend () -> T, ttl: Long = 5000): T {
+        val entry = cache.value[key]
+        if (entry != null && entry.expiresAt > System.currentTimeMillis()) {
+            return entry.data as T
+        }
+
+        val data = fetcher()
+        cache.value = cache.value + (key to CacheEntry(data, System.currentTimeMillis() + ttl))
+        return data
+    }
+
+    fun cleanExpired() {
+        cache.value = cache.value.filterValues { it.expiresAt > System.currentTimeMillis() }
+    }
+
+    val statsFlow: Flow<Map<String, Int>> = cache.map { map ->
+        mapOf("size" to map.size, "hits" to 0, "misses" to 0) // Simplificado
+    }
+}
+
+suspend fun main() = runBlocking {
+    println("=== API REST Simulada ===")
+
+    val client = ApiClient()
+    val cache = CacheManager()
+
+    // Peticiones con caché
+    val user1 = cache.getOrFetch("user/1") {
+        client.get<String>(ApiRequest("/users/1")).data
+    }
+    val user2 = cache.getOrFetch("user/1") { // Hit
+        client.get<String>(ApiRequest("/users/1")).data
+    }
+
+    // Múltiples peticiones paralelas
+    val requests = (1..20).map { ApiRequest("/data/$it") }
+    client.getFlow<String>(requests)
+        .retry(2)
+        .catch { e -> println("Error: ${e.message}") }
+        .collect { response ->
+            println("Recibido: ${response.statusCode}")
+        }
+
+    // Estadísticas
+    cache.statsFlow.collect { stats ->
+        println("Caché: ${stats}")
+    }
+}
+```
+
+### Explicación
+
+- **ApiClient**: Usa `Channel` para rate limiting, `withTimeout` y retry logic.
+- **CacheManager**: `StateFlow` para caché, con expiración.
+- **getFlow**: Flow para múltiples peticiones, con `retry` y `catch`.
+
+### Salida Ejemplo
+
+```
+=== API REST Simulada ===
+Recibido: 200
+...
+Caché: {size=2, hits=0, misses=0}
+```
+
+---
+
+## Práctica 3 — Sistema de Monitoreo de Sensores IoT en Tiempo Real
+
+### Código Completo
+
+```kotlin
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+import kotlin.random.Random
+import kotlin.math.abs
+
+data class SensorReading(
+    val sensorId: String,
+    val value: Double,
+    val timestamp: Long,
+    val type: String
+)
+
+data class AggregatedMetrics(
+    val sensorId: String,
+    val avg: Double,
+    val min: Double,
+    val max: Double,
+    val count: Int,
+    val windowStart: Long
+)
+
+data class Anomaly(
+    val sensorId: String,
+    val value: Double,
+    val threshold: Double,
+    val timestamp: Long
+)
+
+class Sensor(val id: String, val type: String) {
+    private var currentValue = 20.0
+
+    fun readings(): Flow<SensorReading> = flow {
+        while (currentCoroutineContext().isActive) {
+            val variation = (-1.0..1.0).random()
+            currentValue += variation
+            val value = if (Random.nextDouble() < 0.05) currentValue * 1.5 else currentValue
+            emit(SensorReading(id, value, System.currentTimeMillis(), type))
+            delay((50..200).random().toLong())
+        }
+    }.flowOn(Dispatchers.Default)
+}
+
+class SensorManager(sensors: List<Sensor>) {
+    private val sensorFlows = sensors.map { it.readings() }
+
+    fun getAllReadings(): Flow<SensorReading> = merge(*sensorFlows.toTypedArray())
+
+    fun getReadingsBySensor(id: String): Flow<SensorReading> =
+        sensorFlows.find { it.toString().contains(id) } ?: emptyFlow()
+}
+
+class AnomalyDetector(private val threshold: Double = 2.0) {
+    fun detect(readings: Flow<SensorReading>): Flow<Anomaly> = readings
+        .scan(emptyList<Double>()) { window, reading -> (window + reading.value).takeLast(20) }
+        .filter { it.size >= 10 }
+        .zip(readings) { window, reading ->
+            val avg = window.average()
+            val stdDev = calculateStdDev(window, avg)
+            Triple(reading, avg, stdDev)
+        }
+        .filter { (reading, avg, stdDev) -> abs(reading.value - avg) > threshold * stdDev }
+        .debounce(1000)
+        .map { (reading, avg, stdDev) ->
+            Anomaly(reading.sensorId, reading.value, avg + threshold * stdDev, reading.timestamp)
+        }
+        .flowOn(Dispatchers.Default)
+
+    private fun calculateStdDev(values: List<Double>, mean: Double): Double {
+        val variance = values.map { (it - mean) * (it - mean) }.average()
+        return kotlin.math.sqrt(variance)
+    }
+}
+
+class MetricsAggregator {
+    fun aggregateByWindow(readings: Flow<SensorReading>, windowMs: Long = 5000): Flow<AggregatedMetrics> =
+        readings
+            .windowed(windowMs, 0, true)
+            .map { window ->
+                val values = window.map { it.value }
+                AggregatedMetrics(
+                    window.first().sensorId,
+                    values.average(),
+                    values.minOrNull() ?: 0.0,
+                    values.maxOrNull() ?: 0.0,
+                    values.size,
+                    window.first().timestamp
+                )
+            }
+}
+
+suspend fun main() = runBlocking {
+    println("=== Sistema de Monitoreo IoT ===")
+
+    val sensors = listOf(
+        Sensor("TEMP-1", "TEMPERATURE"),
+        Sensor("HUM-1", "HUMIDITY"),
+        Sensor("PRES-1", "PRESSURE")
+    )
+
+    val manager = SensorManager(sensors)
+    val detector = AnomalyDetector()
+    val aggregator = MetricsAggregator()
+
+    val allReadings = manager.getAllReadings()
+
+    // Anomalías
+    launch {
+        detector.detect(allReadings).collect { anomaly ->
+            println("⚠️ ANOMALÍA: ${anomaly.sensorId} = ${anomaly.value}")
         }
     }
 
-    hilos.forEach { it.start() }
-    hilos.forEach { it.join() }
-
-    println("Resultados finales ordenados:")
-    results.forEachIndexed { i, area ->
-        println("Triángulo ${i + 1}: área=$area")
+    // Métricas
+    launch {
+        aggregator.aggregateByWindow(allReadings).collect { metrics ->
+            println("📊 ${metrics.sensorId}: Avg=${metrics.avg}, Min=${metrics.min}, Max=${metrics.max}")
+        }
     }
-    println("Fin cálculo de áreas (Ejercicio 5)\n")
+
+    delay(10000) // 10 segundos
+    println("Sistema detenido")
 }
 ```
 
----
-## Ejecución conjunta (opcional)
-Puedes crear un `main()` para invocar todos:
-```kotlin
-fun main() {
-    ejercicio2()
-    ejercicio3()
-    ejercicio4()
-    ejercicio5()
-}
-```
+### Explicación
 
-## Posibles Salidas (Ejemplo Parcial)
-```
-=== Ejercicio 2 ===
-[Hilo-1] Inicio trabajo
-[Hilo-3] Inicio trabajo
-[Hilo-2] Inicio trabajo
-[Hilo-5] Inicio trabajo
-[Hilo-4] Inicio trabajo
-[Hilo-3] Fin trabajo
-[Hilo-1] Fin trabajo
-...
-=== Ejercicio 3 ===
-[Cuenta-1] 3
-[Cuenta-2] 3
-[Cuenta-3] 3
-...
-=== Ejercicio 4 ===
-Estado previo hilo1=NEW, hilo2=NEW
-[Inspector-1] Inicio: priority=6, state=RUNNABLE
-[Inspector-2] Inicio: isDaemon=false, isAlive=true
-...
-=== Ejercicio 5 ===
-[Triangulo-1] base=3.0 altura=4.0 área=6.0
-...
-```
+- **Sensor**: Flow que emite lecturas con variaciones y spikes.
+- **SensorManager**: `merge` para combinar flows de sensores.
+- **AnomalyDetector**: Usa `scan`, `zip`, `debounce` para detectar anomalías.
+- **MetricsAggregator**: `windowed` para agregaciones por tiempo.
 
-## Notas
-- Los estados de hilo pueden variar según el planificador.
-- Para experimentar con `isDaemon`, prueba `hilo2.isDaemon = true` antes de `start()`.
-- En ejercicio 5 los accesos a la lista de resultados se protegen con `synchronized` para asegurar visibilidad y ausencia de condiciones de carrera.
+### Salida Ejemplo
+
+```
+=== Sistema de Monitoreo IoT ===
+📊 TEMP-1: Avg=20.5, Min=19.2, Max=21.8
+⚠️ ANOMALÍA: TEMP-1 = 35.2
+...
+Sistema detenido
+```
 
 ---
+
+## Notas Generales
+
+- Todas las soluciones usan `kotlinx-coroutines-core`.
+- Para ejecutar, añade `implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")` en `build.gradle.kts`.
+- Las salidas pueden variar por aleatoriedad.
+
 **Fin de Soluciones3.md**

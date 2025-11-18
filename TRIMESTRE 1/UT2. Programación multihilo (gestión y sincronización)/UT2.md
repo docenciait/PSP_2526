@@ -5,4 +5,3 @@
 - [2.3 Corrutinas en Kotlin](3_CorrutinasKotlin.md)
 - [Actividades 1](Actividades.md)
 - [Actividades 2](Actividades2.md)
-- [Actividades 3](Actividades3.md)
