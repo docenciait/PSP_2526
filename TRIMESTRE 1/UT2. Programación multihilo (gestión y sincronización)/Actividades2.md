@@ -145,11 +145,11 @@ Enunciado
 
 ### Tareas
 
-1. Crea un Channel<Int> con capacidad de buffer (p. ej. 3).
-2. Lanza un productor que envíe los valores del 1 al 20 con un pequeño delay (30ms) entre envíos.
-3. Lanza dos consumidores que lean del mismo canal y procesen a distinta velocidad (por ejemplo, consumidor 1: delay(80ms) y consumidor 2: delay(40ms)).
-4. Cierra el canal desde el productor cuando termine y espera a que ambos consumidores finalicen.
-5. Repite el experimento con distintas capacidades: 0 (rendezvous), 3, y Channel.UNLIMITED.
+- Crea un Channel<Int> con capacidad de buffer (p. ej. 3).
+- Lanza un productor que envíe los valores del 1 al 20 con un pequeño delay (30ms) entre envíos.
+- Lanza dos consumidores que lean del mismo canal y procesen a distinta velocidad (por ejemplo, consumidor 1: delay(80ms) y consumidor 2: delay(40ms)).
+- Cierra el canal desde el productor cuando termine y espera a que ambos consumidores finalicen.
+- Repite el experimento con distintas capacidades: 0 (rendezvous), 3, y Channel.UNLIMITED.
 
 ### Preguntas guía
 
