@@ -110,42 +110,57 @@ Pistas
 
 ---
 
-## Actividad 6 — Flow básico y operadores
+## Actividad 6 — Flow con operadores y procesamiento
 
 Enunciado
-: Crea un `flow` que emita los números 1..6 con `delay(100)` entre emisiones. En `main`, aplica `filter { it % 2 == 0 }`, `map { it * it }` y `collect` los primeros 2 resultados usando `take(2)`.
+: Crea una función `simpleFlow(): Flow<Int>` que emita los números del 1 al 10 con `delay(100)` entre emisiones, imprimiendo "Flow iniciado" al empezar. En `main`, aplica `filter { it % 2 == 0 }` para pares, `map { it * 10 }` para multiplicar por 10, `buffer(3)` para buffering, `take(3)` para los primeros 3, y `collect` imprimiendo "Procesado $value". Imprime mensajes antes y después.
 
 Objetivos
 
-- Usar `flow`, operadores `filter`, `map` y `take`.
+- Usar `flow`, `emit`, `delay`, operadores `filter`, `map`, `buffer`, `take`, `collect`.
+- Entender la cadena de operadores en flows.
 
 Pistas
 
-- `(1..6).asFlow().filter { ... }.map { ... }.take(2).collect { println(it) }`
+- `fun simpleFlow(): Flow<Int> = flow { println("Flow iniciado"); for (i in 1..10) { delay(100); emit(i) } }`
+- En main: `simpleFlow().filter { ... }.map { ... }.buffer(3).take(3).collect { println("Procesado $it") }`
 
 Salida esperada:
 
 ```
-4
-16
+Llamando a flow...
+Flow iniciado
+Procesado 20
+Procesado 40
+Procesado 60
+Finalizado
 ```
 
 ---
 
-## Actividad 7 — StateFlow y SharedFlow (observadores)
+## Actividad 7 — Buffered Channels
 
-Enunciado
-: Implementa un `Counter` que use `MutableStateFlow<Int>` para exponer el contador como `StateFlow`. En `main`, lanza una corrutina que recoja `counter.count` y otra que incremente el contador cada 150 ms tres veces.
+ENUNCIADO
 
-Objetivos
+- Objetivo: comprender cómo funciona un Channel bufferizado y cómo afecta
+- al acoplamiento entre productor y consumidores.
 
-- Practicar `StateFlow` y observar cambios de estado.
+- Tareas:
 
-Pistas
+1.  Crea un Channel<Int> con capacidad de buffer (p. ej. 3).
+2.  Lanza un productor que envíe los valores del 1 al 20 con un pequeño delay (30ms) entre envíos.
 
-- `private val _count = MutableStateFlow(0); val count: StateFlow<Int> = _count.asStateFlow()`
-- `launch { counter.count.collect { println(it) } }`
-- `launch { repeat(3) { delay(150); counter.increment() } }`
+3.  Lanza dos consumidores que lean del mismo canal y procesen a distinta velocidad
+
+- (por ejemplo, consumidor 1: delay(80ms) y consumidor 2: delay(40ms)).
+
+4. Cierra el canal desde el productor cuando termine y espera a que ambos consumidores finalicen.
+5. Repite el experimento con distintas capacidades: 0 (rendezvous), 3, y Channel.UNLIMITED.
+
+- Preguntas guía:
+- ¿Se bloquea el productor al usar capacidad 0? ¿Con capacidad 3? ¿Y con UNLIMITED?
+- ¿Cómo se reparte el trabajo entre los dos consumidores? ¿Se mantiene el orden global?
+- ¿Cómo cambia el tiempo total si varías las capacidades y los delays de consumidor?
 
 ---
 
@@ -181,6 +196,7 @@ Pistas:
 
 - Usa `supervisorScope` o captura excepciones en cada `async`.
 - Simula latencia con `delay`.
+- Para sacar el nombre de la corrutina mejor usar: `val coroutineName = coroutineContext[CoroutineName]?.name`
 
 Ejemplo mínimo:
 
@@ -194,7 +210,7 @@ suspend fun fetchUser(id: Int): User { delay(800); return User(id, "User$id") }
 suspend fun fetchPermissions(id: Int): Permissions { delay(600); return Permissions(listOf("READ","WRITE")) }
 
 fun main() = runBlocking {
-	supervisorScope {
+	CoroutineScope {
 		val u = async { fetchUser(1) }
 		val p = async { fetchPermissions(1) }
 		println("Combined: ${'$'}{u.await()} + ${'$'}{p.await()}")

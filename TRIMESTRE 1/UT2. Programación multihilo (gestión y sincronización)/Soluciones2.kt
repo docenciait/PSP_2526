@@ -1,11 +1,15 @@
 
 
+package app
+
+
+
 /**
  * Soluciones — Actividades sobre Corrutinas
- * 
+ *
  * Este archivo contiene las soluciones completas y ejecutables para todas las actividades
  * propuestas en Actividades2.md
- * 
+ *
  * Para ejecutar cada actividad, descomenta la función correspondiente en el main()
  */
 
@@ -41,7 +45,7 @@ suspend fun op(id: Int): String {
 
 fun actividad2() = runBlocking {
     println("\n=== ACTIVIDAD 2 ===")
-    
+
     // Versión secuencial
     val startSeq = System.currentTimeMillis()
     val r1 = op(1)
@@ -127,63 +131,97 @@ fun actividad5() = runBlocking {
     }
 
     // Consumidor
-    for (value in channel) {
-        println("Recibido: $value")
+    launch {
+        for (value in channel) {
+            println("Recibido: $value")
+        }
+        println("Proceso completado")
     }
-
-    println("Proceso completado")
 }
 
 // ============================================
 // ACTIVIDAD 6 — Flow básico y operadores
 // ============================================
 
+fun simpleFlow(): Flow<Int> = flow {
+    println("Flow iniciado")
+    for (i in 1..10) {
+        delay(100)
+        emit(i)
+    }
+}
+
 fun actividad6() = runBlocking {
     println("\n=== ACTIVIDAD 6 ===")
-    (1..6).asFlow()
+    println("Llamando a flow...")
+    val flow = simpleFlow()
+
+    println("Colectando con operadores...")
+    flow
         .filter { it % 2 == 0 }
-        .map { it * it }
-        .take(2)
+        .map { it * 10 }
+        .buffer(3)
+        .take(3)
         .collect { value ->
-            println(value)
+            println("Procesado $value")
         }
+
+    println("Finalizado")
 }
 
+
 // ============================================
-// ACTIVIDAD 7 — StateFlow y SharedFlow (observadores)
+// ACTIVIDAD 7 — Buffered Channels
 // ============================================
 
-class Counter {
-    private val _count = MutableStateFlow(0)
-    val count: StateFlow<Int> = _count.asStateFlow()
-
-    fun increment() {
-        _count.value++
-    }
-}
 
 fun actividad7() = runBlocking {
-    println("\n=== ACTIVIDAD 7 ===")
-    val counter = Counter()
+    println("\n=== ACTIVIDAD 7 — Buffered Channels ===")
 
-    // Observador
-    launch {
-        counter.count.collect { value ->
-            println("Contador: $value")
+    // Cambia esta capacidad y observa el comportamiento: 0, 3, Channel.UNLIMITED
+    val capacity: Int = 3
+    val channel: Channel<Int> = Channel(capacity)
+
+    val start = System.currentTimeMillis()
+
+    // Productor
+    val producer = launch {
+        try {
+            for (v in 1..20) {
+                println("PROD -> Enviando $v")
+                channel.send(v) // se suspende si el buffer está lleno (según capacidad)
+                delay(30)
+            }
+        } finally {
+            channel.close()
+            println("PROD -> Canal cerrado")
         }
     }
 
-    delay(100) // Asegurar que el observador esté listo
-
-    // Incrementador
-    launch {
-        repeat(3) {
-            delay(150)
-            counter.increment()
+    // Consumidor rápido
+    val consumerFast = launch {
+        for (v in channel) {
+            println("C2 (rápido) <- $v")
+            delay(40)
         }
+        println("C2 (rápido) completado")
     }
 
-    delay(600) // Esperar a que termine
+    // Consumidor lento
+    val consumerSlow = launch {
+        // Nota: al iterar el mismo canal, el trabajo se reparte entre consumidores
+        for (v in channel) {
+            println("C1 (lento)  <- $v")
+            delay(80)
+        }
+        println("C1 (lento) completado")
+    }
+
+    // Esperar finalización
+    joinAll(producer, consumerFast, consumerSlow)
+
+    val total = System.currentTimeMillis() - start
+    println("Tiempo total: ${total}ms (capacidad=$capacity)")
 }
 
 // ============================================
@@ -246,7 +284,7 @@ fun practicaA() = runBlocking {
     println("\n=== PRÁCTICA A ===")
     val startTime = System.currentTimeMillis()
 
-    supervisorScope {
+    CoroutineScope {
         val userDeferred = async { fetchUser(1) }
         val permissionsDeferred = async { fetchPermissions(1) }
 
@@ -420,21 +458,21 @@ fun main() {
     
     // Descomenta las actividades que quieras ejecutar:
     
-    actividad1()
-    actividad2()
-    actividad3()
-    actividad4()
+    // actividad1()
+    // actividad2()
+    // actividad3()
+    // actividad4()
     actividad5()
-    actividad6()
-    actividad7()
-    actividad8()
+    // actividad6()
+    // actividad7()
+    // actividad8()
     
     // Prácticas reales
-    practicaA()
-    practicaB()
-    practicaC()
-    practicaD()
-    practicaE()
+    // practicaA()
+    // practicaB()
+    // practicaC()
+    // practicaD()
+    // practicaE()
     
     println("\n========================================")
     println("FIN DE LAS SOLUCIONES")
