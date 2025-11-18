@@ -279,37 +279,7 @@ fun main() = runBlocking {
 
 ---
 
-### Práctica D — Bridge para APIs callback (suspending)
-
-Enunciado: Dada una API basada en callbacks (por ejemplo, `startDownload(url, callback)`), crea un adaptador `suspend fun downloadSuspending(url: String): ByteArray` usando `suspendCancellableCoroutine` para integrar la API con corrutinas y soportar cancelación.
-
-Objetivos:
-
-- Convertir APIs callback a suspending functions.
-- Manejar cancelación invocando `invokeOnCancellation`.
-
-Pistas:
-
-- Usa `suspendCancellableCoroutine` y `cont.invokeOnCancellation { /* cancelar llamada */ }`.
-
-Esqueleto:
-
-```kotlin
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-
-suspend fun downloadSuspending(url: String): ByteArray = suspendCancellableCoroutine { cont ->
-	val call = startDownload(url) { data, err ->
-		if (err != null) cont.resumeWithException(err) else cont.resume(data)
-	}
-	cont.invokeOnCancellation { call.cancel() }
-}
-```
-
----
-
-### Práctica E — Servicio con CoroutineScope y cancelación (lifecycle)
+### Práctica D — Servicio con CoroutineScope y cancelación (lifecycle)
 
 Enunciado: Implementa `WorkerService` que lanza tareas periódicas en su propio `CoroutineScope` y que pueda detenerse limpiamente (cancelando su scope).
 
