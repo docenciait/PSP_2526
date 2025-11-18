@@ -140,24 +140,19 @@ Finalizado
 
 ## Actividad 7 — Buffered Channels
 
-ENUNCIADO
+Enunciado
+: Comprender cómo funciona un Channel bufferizado y cómo afecta al acoplamiento entre productor y consumidores.
 
-- Objetivo: comprender cómo funciona un Channel bufferizado y cómo afecta
-- al acoplamiento entre productor y consumidores.
+### Tareas
 
-- Tareas:
-
-1.  Crea un Channel<Int> con capacidad de buffer (p. ej. 3).
-2.  Lanza un productor que envíe los valores del 1 al 20 con un pequeño delay (30ms) entre envíos.
-
-3.  Lanza dos consumidores que lean del mismo canal y procesen a distinta velocidad
-
-- (por ejemplo, consumidor 1: delay(80ms) y consumidor 2: delay(40ms)).
-
+1. Crea un Channel<Int> con capacidad de buffer (p. ej. 3).
+2. Lanza un productor que envíe los valores del 1 al 20 con un pequeño delay (30ms) entre envíos.
+3. Lanza dos consumidores que lean del mismo canal y procesen a distinta velocidad (por ejemplo, consumidor 1: delay(80ms) y consumidor 2: delay(40ms)).
 4. Cierra el canal desde el productor cuando termine y espera a que ambos consumidores finalicen.
 5. Repite el experimento con distintas capacidades: 0 (rendezvous), 3, y Channel.UNLIMITED.
 
-- Preguntas guía:
+### Preguntas guía
+
 - ¿Se bloquea el productor al usar capacidad 0? ¿Con capacidad 3? ¿Y con UNLIMITED?
 - ¿Cómo se reparte el trabajo entre los dos consumidores? ¿Se mantiene el orden global?
 - ¿Cómo cambia el tiempo total si varías las capacidades y los delays de consumidor?
@@ -192,11 +187,10 @@ Objetivos:
 - Usar `async`/`await` para paralelizar I/O.
 - Aprender a componer resultados y tratar errores básicos.
 
-Pistas:
+Pistas
 
 - Usa `supervisorScope` o captura excepciones en cada `async`.
 - Simula latencia con `delay`.
-- Para sacar el nombre de la corrutina mejor usar: `val coroutineName = coroutineContext[CoroutineName]?.name`
 
 Ejemplo mínimo:
 
@@ -210,7 +204,7 @@ suspend fun fetchUser(id: Int): User { delay(800); return User(id, "User$id") }
 suspend fun fetchPermissions(id: Int): Permissions { delay(600); return Permissions(listOf("READ","WRITE")) }
 
 fun main() = runBlocking {
-	CoroutineScope {
+	supervisorScope {
 		val u = async { fetchUser(1) }
 		val p = async { fetchPermissions(1) }
 		println("Combined: ${'$'}{u.await()} + ${'$'}{p.await()}")
