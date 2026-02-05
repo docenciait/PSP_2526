@@ -66,11 +66,3 @@ fun WeatherCard(city: String, temperature: String, onRefresh: () -> Unit) {
 
 ---
 
-#### Guía de Ayuda para el Alumno:
-
-- **Paso 1:** Configura las dependencias de Retrofit y Gson en el `build.gradle`.
-- **Paso 2:** Crea el `ApiService` con la Base URL de Open-Meteo.
-- **Paso 3:** En el ViewModel, recuerda usar un bloque `try-catch` por si el usuario no tiene internet.
-- **Paso 4:** En la UI, usa `collectAsState()` para que la Card se refresque automáticamente cuando llegue el dato de la API.
-
----
