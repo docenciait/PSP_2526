@@ -146,6 +146,114 @@ Cuando escribes una URL en el navegador, este envía una petición HTTP GET al s
 
 ---
 
+#### 6. Retrofit: CRUD contra API pública
+
+Objetivo: consumir una API REST pública (por ejemplo, https://jsonplaceholder.typicode.com) con Retrofit en Android para operaciones CRUD.
+
+**Dependencias (Gradle Kotlin DSL):**
+
+```kotlin
+dependencies {
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+}
+```
+
+**Modelo de datos (DTO):**
+
+```kotlin
+data class Post(
+    val userId: Int,
+    val id: Int? = null,
+    val title: String,
+    val body: String
+)
+```
+
+**Interfaz Retrofit:**
+
+```kotlin
+import retrofit2.http.*
+
+interface PostApi {
+    @GET("posts")
+    suspend fun list(): List<Post>
+
+    @GET("posts/{id}")
+    suspend fun get(@Path("id") id: Int): Post
+
+    @POST("posts")
+    suspend fun create(@Body post: Post): Post
+
+    @PUT("posts/{id}")
+    suspend fun update(@Path("id") id: Int, @Body post: Post): Post
+
+    @DELETE("posts/{id}")
+    suspend fun delete(@Path("id") id: Int): Unit
+}
+```
+
+**Instancia Retrofit:**
+
+```kotlin
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
+
+fun providePostApi(): PostApi {
+    val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+    val client = OkHttpClient.Builder()
+        .addInterceptor(logging)
+        .build()
+
+    val retrofit = Retrofit.Builder()
+        .baseUrl("https://jsonplaceholder.typicode.com/")
+        .addConverterFactory(MoshiConverterFactory.create())
+        .client(client)
+        .build()
+
+    return retrofit.create(PostApi::class.java)
+}
+```
+
+**Uso desde ViewModel (corrutinas):**
+
+```kotlin
+class PostViewModel : ViewModel() {
+    private val api = providePostApi()
+    private val _posts = MutableStateFlow<List<Post>>(emptyList())
+    val posts = _posts.asStateFlow()
+
+    fun load() = viewModelScope.launch { _posts.value = api.list() }
+
+    fun add(title: String, body: String) = viewModelScope.launch {
+        api.create(Post(userId = 1, title = title, body = body))
+        load()
+    }
+
+    fun update(id: Int, title: String, body: String) = viewModelScope.launch {
+        api.update(id, Post(userId = 1, id = id, title = title, body = body))
+        load()
+    }
+
+    fun remove(id: Int) = viewModelScope.launch {
+        api.delete(id)
+        load()
+    }
+}
+```
+
+**Notas rápidas:**
+
+- `jsonplaceholder` no persiste cambios; devuelve respuestas simuladas.
+- Añade manejo de errores (try/catch, Result, Either) y mapeo a modelos de dominio en apps reales.
+- Inyecta `PostApi` con Hilt/Koin y comparte el `OkHttpClient`.
+- Usa `Dispatchers.IO` si trabajas fuera de `viewModelScope`.
+
+---
+
 ### Resumen y Conexión de Conceptos
 
 Los servicios en red permiten que aplicaciones y dispositivos se comuniquen y compartan información. Para ello, utilizan protocolos estándar como HTTP y FTP, que funcionan sobre protocolos de transporte fiables como TCP. HTTP es la base de la web y, junto con REST, permite crear APIs que facilitan la interacción entre sistemas de forma sencilla y escalable.

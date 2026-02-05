@@ -346,3 +346,148 @@ Pensado para integrarlo luego en Jetpack Compose.
 - Corrutinas IO para llamadas de red
 
 ---
+
+# 7. WebSockets en Android (Compose + Ktor + FastAPI)
+
+## 7.1. Backend FastAPI (Python 3.11+)
+
+```python
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+
+connected = set()
+
+
+@app.websocket("/ws")
+async def websocket_endpoint(ws: WebSocket):
+    await ws.accept()
+    connected.add(ws)
+    try:
+        while True:
+            data = await ws.receive_text()
+            for peer in connected:
+                await peer.send_text(f"eco: {data}")
+    except WebSocketDisconnect:
+        connected.remove(ws)
+```
+
+Arrancar con Uvicorn: `uvicorn main:app --reload --port 8000`.
+
+---
+
+## 7.2. Dependencias en Android (Gradle Kotlin DSL)
+
+```kotlin
+dependencies {
+    implementation("io.ktor:ktor-client-android:3.0.0")
+    implementation("io.ktor:ktor-client-websockets:3.0.0")
+    implementation("io.ktor:ktor-client-logging:3.0.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+}
+```
+
+---
+
+## 7.3. Cliente Ktor con corrutinas
+
+```kotlin
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.android.Android
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.websocket.webSocketSession
+import io.ktor.client.plugins.websocket.receiveDeserialized
+import io.ktor.client.plugins.websocket.sendSerialized
+import io.ktor.client.plugins.websocket.ws
+import io.ktor.serialization.kotlinx.json.json
+import io.ktor.websocket.CloseReason
+import io.ktor.websocket.Frame
+import io.ktor.websocket.close
+import io.ktor.websocket.readText
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+
+class ChatViewModel : ViewModel() {
+    private val client = HttpClient(Android) {
+        install(Logging) { level = LogLevel.INFO }
+        install(ContentNegotiation) { json() }
+    }
+
+    private val _messages = MutableStateFlow<List<String>>(emptyList())
+    val messages = _messages.asStateFlow()
+
+    private val outgoing = Channel<String>(capacity = Channel.UNLIMITED)
+
+    fun connect(url: String = "ws://10.0.2.2:8000/ws") {
+        viewModelScope.launch {
+            client.ws(urlString = url) {
+                launch {
+                    for (msg in outgoing) send(Frame.Text(msg))
+                }
+                try {
+                    for (frame in incoming) {
+                        if (frame is Frame.Text) {
+                            _messages.value = _messages.value + frame.readText()
+                        }
+                    }
+                } finally {
+                    close(CloseReason(CloseReason.Codes.NORMAL, "bye"))
+                }
+            }
+        }
+    }
+
+    fun send(text: String) {
+        outgoing.trySend(text)
+    }
+}
+```
+
+---
+
+## 7.4. UI con Jetpack Compose
+
+```kotlin
+@Composable
+fun ChatScreen(vm: ChatViewModel = viewModel()) {
+    val mensajes by vm.messages.collectAsState()
+    var texto by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) { vm.connect() }
+
+    Column(Modifier.fillMaxSize().padding(16.dp)) {
+        LazyColumn(Modifier.weight(1f)) {
+            items(mensajes) { msg -> Text(msg) }
+        }
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            OutlinedTextField(
+                value = texto,
+                onValueChange = { texto = it },
+                modifier = Modifier.weight(1f),
+                label = { Text("Mensaje") }
+            )
+            Spacer(Modifier.width(8.dp))
+            Button(onClick = { vm.send(texto); texto = "" }) {
+                Text("Enviar")
+            }
+        }
+    }
+}
+```
+
+---
+
+## 7.5. Buenas prácticas
+
+- Usar `10.0.2.2` desde emulador para llegar al host.
+- Mantener el `HttpClient` como singleton o inyectado (Hilt/Koin).
+- Cerrar la sesión WebSocket en `onCleared()` si no se usa dentro del scope del `ViewModel`.
+- Validar reconexiones y backoff exponencial en producción.
