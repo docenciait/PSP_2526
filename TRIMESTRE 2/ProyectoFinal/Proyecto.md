@@ -4,6 +4,6 @@
 
 ## RAs PSP
 
-- RA3/UT3. Comunicaciones en red con sockets (20%)
-- RA4/UT4. Servicios en red (20%)
-- RA5/ UT5. Seguridad en aplicaciones y comunicaciones (20%)
+- RA3/UT3. Comunicaciones en red con sockets (20%) -> Recordar que la mitad va a la FFE (10% en clase y 10% en FFE).
+- RA4/UT4. Servicios en red (25%)
+- RA5/ UT5. Seguridad en aplicaciones y comunicaciones (25%)
