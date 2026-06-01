@@ -291,3 +291,25 @@ La calificación total de RA2 se calcula en una escala de 0 a 10.
 - Cada carpeta debe incluir `README.md`, `src/Main.kt` y un documento de resultados.
 - Comprueba que el código se ejecuta en tu equipo antes de entregar.
 - Asegúrate de que el documento Markdown final contiene el enunciado completo y las rúbricas.
+
+---
+
+## CALIFICACIÓN TOTAL DEL MÓDULO MEDIANTE DEFENSA
+
+La defensa no es una nota aparte que se promedie al final: actúa **dentro de cada criterio**, mezclándose con la nota del código. La fórmula que usa la herramienta, criterio a criterio, es:
+
+**nota_criterio = (1 − peso) × nota_código + peso × nota_defensa**
+
+donde el _peso_ es el control de arriba (por defecto 65%), la _nota_código_ es lo que vale el artefacto (0–100) y la _nota_defensa_ es la media de los niveles que marcas en las preguntas de ese criterio (0–100). Luego cada criterio aporta sus puntos (`puntos = máximo × nota_criterio/100`), la suma da el RA sobre 10, y la media de los cuatro RA es la nota final.
+
+Un ejemplo con números reales. En PSP-RA1, el criterio "Implementación de procesos externos" vale 3,0 puntos, su código está en 100 y cuelga de una sola pregunta (P1). Si el alumno responde P1 a nivel 50 ("parcial"), con el peso al 65%:
+
+nota_criterio = 0,35 × 100 + 0,65 × 50 = **67,5%** → 3,0 × 0,675 = **2,03 puntos** (en vez de los 3,0 que daría el código solo).
+
+Tres cosas importantes de esa relación:
+
+El **peso** es el dial que decide cuánto manda la defensa. A 0% la nota es puro código (la defensa no toca nada); a 100% la nota de los criterios con pregunta es exactamente lo que sepa explicar el alumno, ignorando el código. A 65% lo entregado es un punto de partida que la defensa sube o baja.
+
+La defensa solo afecta a un criterio **si tiene al menos una pregunta evaluada**. Mientras una pregunta esté "sin evaluar", no cuenta, y el criterio se queda en su nota de código. Por eso al arrancar ves el techo (~9,6): aún no has defendido nada.
+
+Y los criterios **sin ninguna pregunta** (entrega, layouts, Material Design, widgets…) nunca los toca la defensa: se evalúan solo por el artefacto y hacen de suelo. Ese es el motivo de que "todo a 0" no baje hasta cero, sino a ~5,5.
